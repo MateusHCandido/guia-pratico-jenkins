@@ -1,0 +1,38 @@
+FROM jenkins/jenkins:2.516.1-jdk21
+
+USER root
+
+# Instalar dependências para baixar binários
+RUN apt-get update && apt-get install -y curl apt-transport-https gnupg lsb-release && \
+    rm -rf /var/lib/apt/lists/*
+
+# Instalar kubectl
+ARG KUBECTL_VERSION=v1.31.0
+RUN curl -LO https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
+    chmod +x kubectl && mv kubectl /usr/local/bin/
+
+# Instalar kind
+ARG KIND_VERSION=v0.23.0
+RUN curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64 && \
+    chmod +x /usr/local/bin/kind
+
+# Criar usuário admin automático no Jenkins
+RUN mkdir -p /usr/share/jenkins/ref/init.groovy.d
+RUN echo 'import jenkins.model.*\n\
+import hudson.security.*\n\
+\n\
+def instance = Jenkins.getInstance()\n\
+def env = System.getenv()\n\
+def username = env.JENKINS_USER ?: "admin"\n\
+def password = env.JENKINS_PASS ?: "admin"\n\
+\n\
+def hudsonRealm = new HudsonPrivateSecurityRealm(false)\n\
+hudsonRealm.createAccount(username, password)\n\
+instance.setSecurityRealm(hudsonRealm)\n\
+\n\
+def strategy = new FullControlOnceLoggedInAuthorizationStrategy()\n\
+instance.setAuthorizationStrategy(strategy)\n\
+instance.save()\n' \
+> /usr/share/jenkins/ref/init.groovy.d/basic-security.groovy
+
+USER jenkins
