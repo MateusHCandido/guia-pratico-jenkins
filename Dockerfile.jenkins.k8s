@@ -35,4 +35,7 @@ instance.setAuthorizationStrategy(strategy)\n\
 instance.save()\n' \
 > /usr/share/jenkins/ref/init.groovy.d/basic-security.groovy
 
+# Instalar Docker CLI
+RUN curl -fsSL https://get.docker.com | sh
+
 USER jenkins
