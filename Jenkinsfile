@@ -7,7 +7,7 @@ pipeline {
                 sh 'echo "Inicializando build docker image"'
                 
                 script {
-                    dockerapp = docker.build("mateushcds/guia-jenkins:${env.BUILD_ID}", '-f  guia-pratico-jenkins/src/Dockerfile .')
+                    dockerapp = docker.build("mateushcds/guia-jenkins:${env.BUILD_ID}", '-f ./src/Dockerfile .')
                 }
 
                 sh 'echo "Finalizando build docker image"'
