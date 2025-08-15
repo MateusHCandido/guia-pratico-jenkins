@@ -20,9 +20,11 @@ pipeline {
                 sh 'echo "Inicializando push docker image"'
 
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub')
-                    dockerapp.push('latest')
-                    dockerapp.push("${env.BUILD_ID}")
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+                        dockerapp.push('latest')
+                        dockerapp.push("${env.BUILD_ID}")
+                    }
+                    
                 }
 
                 sh 'echo "Finalizando push docker image"'
