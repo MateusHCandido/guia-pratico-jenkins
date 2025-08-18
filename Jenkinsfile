@@ -33,8 +33,7 @@ pipeline {
 
         stage('Deploy no Kubernetes') {
             environment {
-                TAG_VERSION = "${env.BUILD_ID}"
-                KUBECONFIG = credentials('kubeconfig')
+                TAG_VERSION = "${env.BUILD_ID}"  // Tag baseada no build do Jenkins
             }
             steps {
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
@@ -44,10 +43,10 @@ pipeline {
                         writeFile(file: './k8s/deployment.yaml', text: deploymentFile)
                     }
 
-                    sh 'kubectl apply -f k8s/deployment.yaml'
+                    sh 'kubectl apply -f ./k8s/deployment.yaml --kubeconfig $KUBECONFIG'
                 }
             }
         }
-  
+
     }
 }
