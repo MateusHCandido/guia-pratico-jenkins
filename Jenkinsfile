@@ -37,7 +37,7 @@ pipeline {
                 KUBECONFIG = credentials('kubeconfig')
             }
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     script {
                         def deploymentFile = readFile('./k8s/deployment.yaml')
                         deploymentFile = deploymentFile.replaceAll('\\{\\{tag\\}\\}', "${TAG_VERSION}")
