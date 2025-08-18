@@ -8,38 +8,24 @@ services:
     container_name: jenkins-application
     privileged: true
     user: root
+    environment:
+      # Força o Docker CLI a usar o socket local
+      DOCKER_HOST: unix:///var/run/docker.sock
     networks:
       - jenkins
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
+      # Dados do Jenkins
       - jenkins-data:/var/jenkins_home
+      # Configuração do kubeconfig do host
       - ${USERPROFILE}\.kube:/var/jenkins_home/.kube
+      # Docker do host para o kind funcionar
       - /var/run/docker.sock:/var/run/docker.sock
-
-  kind-kubernetes:
-    image: docker:27.0.3-dind
-    container_name: kind-kubernetes
-    privileged: true
-    networks:
-      - jenkins
-    environment:
-      DOCKER_TLS_CERTDIR: ""
-    command: >
-      sh -c "
-      apk add --no-cache curl &&
-      curl -Lo /usr/local/bin/kind https://kind.sigs.k8s.io/dl/v0.23.0/kind-linux-amd64 &&
-      chmod +x /usr/local/bin/kind &&
-      kind create cluster --name compose-cluster --wait 60s &&
-      tail -f /dev/null
-      "
-    volumes:
-      - kind-data:/var/lib/docker
 
 volumes:
   jenkins-data:
-  kind-data:
 
 networks:
   jenkins:
