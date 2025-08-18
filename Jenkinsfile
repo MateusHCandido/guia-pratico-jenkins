@@ -33,7 +33,7 @@ pipeline {
 
         stage('Deploy no Kubernetes') {
             enviroment {
-                tag_version = "${{env.BUILD_ID}}"
+                tag_version = "${env.BUILD_ID}"
             }
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
