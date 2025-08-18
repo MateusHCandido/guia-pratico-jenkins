@@ -23,6 +23,7 @@ services:
       - ${USERPROFILE}\.kube:/var/jenkins_home/.kube
       # Docker do host para o kind funcionar
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./k8s/kubeconfig.yaml:/var/jenkins_home/k8s/kubeconfig.yaml:ro
 
 volumes:
   jenkins-data:
