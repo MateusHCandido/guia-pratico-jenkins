@@ -42,7 +42,8 @@ pipeline {
                     deploymentFile = deploymentFile.replaceAll('\\{\\{tag\\}\\}', "${TAG_VERSION}")
                     writeFile(file: './k8s/deployment.yaml', text: deploymentFile)
                 }
-                sh 'kubectl --kubeconfig=$KUBECONFIG apply -f ./k8s/deployment.yaml'
+                sh 'kubectl --kubeconfig=/var/jenkins_home/k8s/kubeconfig.yaml apply -f ./k8s/deployment.yaml
+'
             }
         }
 
