@@ -37,8 +37,15 @@ pipeline {
                 KUBECONFIG = credentials('kubeconfig')
             }
             steps {
-                sh 'sed -i "s/{{tag}}/$TAG_VERSION/g" ./k8s/deployment.yaml'
-                sh 'kubectl apply -f ./k8s/deployment.yaml'
+                withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
+                    script {
+                        def deploymentFile = readFile('./k8s/deployment.yaml')
+                        deploymentFile = deploymentFile.replaceAll('\\{\\{tag\\}\\}', "${TAG_VERSION}")
+                        writeFile(file: './k8s/deployment.yaml', text: deploymentFile)
+                    }
+
+                    sh 'kubectl apply -f ./k8s/deployment.yaml'
+                }
             }
         }
   
