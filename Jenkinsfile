@@ -31,16 +31,23 @@ pipeline {
             }
         }
 
-        stage('Deploy no Kubernetes') {
+       stage('Deploy no Kubernetes') {
             environment {
-                tag_version = "${env.BUILD_ID}"
+                tag_version = "${BUILD_ID}"
             }
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
-                    sh 'sed -i "s/{{tag}}/$tag_version/g" ./k8s/deplooyment.yaml'
-                    sh 'kubectl apply -f k8s/deployment.yaml'
+                    script {
+                        def deploymentFile = readFile('./k8s/deployment.yaml')
+
+                        deploymentFile = deploymentFile.replaceAll('\\{\\{tag\\}\\}', "${tag_version}")
+
+                        writeFile(file: './k8s/deployment.yaml', text: deploymentFile)
+                    }
+
+                    sh 'kubectl apply -f ./k8s/deployment.yaml'
                 }
             }
-        }
+        }   
     }
 }
