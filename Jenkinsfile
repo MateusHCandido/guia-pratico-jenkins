@@ -44,7 +44,7 @@ pipeline {
                         writeFile(file: './k8s/deployment.yaml', text: deploymentFile)
                     }
 
-                    sh 'kubectl apply -f ./k8s/deployment.yaml'
+                    sh 'kubectl apply -f k8s/deployment.yaml'
                 }
             }
         }
