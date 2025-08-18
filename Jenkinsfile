@@ -42,7 +42,7 @@ pipeline {
                         def deploymentFile = readFile('./k8s/deployment.yaml')
 
                         // Substitui a tag
-                        deploymentFile = deploymentFile.replaceAll('\\{\\{tag\\}\\}', tag_version)
+                        deploymentFile = deploymentFile.replaceAll('//{//{tag//}//}', tag_version)
 
                         // Salva em arquivo temporário
                         writeFile(file: './k8s/deployment-temp.yaml', text: deploymentFile)
