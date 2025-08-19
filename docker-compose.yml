@@ -23,3 +23,5 @@ volumes:
 
 networks:
   default:
+    external:
+      name: kind
