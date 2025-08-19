@@ -34,15 +34,12 @@ pipeline {
         stage('Deploy no Kubernetes') {
             environment {
                 TAG_VERSION = "${env.BUILD_ID}"
-                KUBECONFIG = "/var/jenkins_home/k8s/kubeconfig.yaml"
             }
             steps {
-                script {
-                    def deploymentFile = readFile('./k8s/deployment.yaml')
-                    deploymentFile = deploymentFile.replaceAll('\\{\\{tag\\}\\}', "${TAG_VERSION}")
-                    writeFile(file: './k8s/deployment.yaml', text: deploymentFile)
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+                    sh 'sed -i "s/{{tag}}/TAG_VERSION/g" ./k8s/deployment.yaml'
+                    sh 'kubectl apply -f k8s/deployment.yaml'
                 }
-                sh 'kubectl --kubeconfig=$KUBECONFIG apply -f ./k8s/deployment.yaml'
             }
         }
 

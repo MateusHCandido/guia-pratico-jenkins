@@ -1,30 +1,25 @@
-version: '3.9'
+version: "3.9"
 
 services:
-  kind-k8s:
-    image: kindest/node:v1.28.0
-    container_name: kind-k8s
+  jenkins-application:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins.k8s
+    container_name: jenkins-application
     privileged: true
-    volumes:
-      - kind-data:/var/lib/docker
-      - ./k8s:/k8s
-    command: ["sleep", "infinity"] # Mantém o container rodando para criar o cluster
-
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins
     user: root
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
     ports:
       - "8080:8080"
       - "50000:50000"
     volumes:
-      - jenkins_home:/var/jenkins_home
-      - ./k8s:/var/jenkins_home/k8s
-    environment:
-      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
-    depends_on:
-      - kind-k8s
+      - jenkins-data:/var/jenkins_home
+      - "C:/k8s/kind-config.yaml:/var/jenkins_home/.kube/config"
+      - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-  jenkins_home:
-  kind-data:
+  jenkins-data:
+
+networks:
+  default:
