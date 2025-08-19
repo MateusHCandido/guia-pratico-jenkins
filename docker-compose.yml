@@ -7,9 +7,9 @@ services:
       dockerfile: Dockerfile.jenkins.k8s
     container_name: jenkins-application
     privileged: true
-    user: root
     environment:
       DOCKER_HOST: unix:///var/run/docker.sock
+      KUBECONFIG: /var/jenkins_home/.kube/config
     ports:
       - "8080:8080"
       - "50000:50000"
